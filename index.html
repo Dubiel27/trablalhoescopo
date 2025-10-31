@@ -3,142 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demonstração de Escopo de Bloco (let vs. var)</title>
+    <title>Artigo Simulado da Wikipédia - Modo Escuro</title>
     <style>
+        /* Cores Base para o Dark Mode */
+        :root {
+            --bg-principal: #1c1c1e; /* Fundo escuro */
+            --bg-conteudo: #2c2c2e;  /* Fundo do corpo do texto (levemente mais claro) */
+            --texto-principal: #dcdcdc; /* Texto cinza claro */
+            --texto-secundario: #a0a0a0; /* Texto de detalhes/cabeçalhos */
+            --borda: #404040; /* Linhas de separação */
+            --link: #7ec2ff; /* Azul claro para links */
+            --link-visitado: #b09eff; /* Roxo suave para links visitados */
+            --bg-tabela-header: #3a3a3c;
+        }
+
+        /* 1. Estilos Gerais */
         body {
-            font-family: 'Consolas', monospace;
-            margin: 20px;
-            background-color: #f0f8ff;
+            font-family: sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            margin: 0;
+            padding: 0;
         }
-        .container {
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        
+        a {
+            color: var(--link);
+            text-decoration: none;
         }
-        h1, h2 {
-            color: #0056b3;
+
+        a:visited {
+            color: var(--link-visitado);
         }
+
+        /* 2. Layout Principal (Simulação da Estrutura da Wikipédia) */
+        .page-container {
+            display: flex;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+
+        /* Barra lateral (Menu) */
+        .sidebar {
+            width: 15%;
+            padding: 20px 0;
+            border-right: 1px solid var(--borda);
+            margin-right: 25px;
+        }
+
+        .sidebar h2 {
+            color: var(--texto-secundario);
+            font-size: 1.1em;
+            margin-top: 20px;
+            border-bottom: 1px solid var(--borda);
+            padding-bottom: 5px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Área de Conteúdo Principal */
+        .content {
+            flex-grow: 1;
+            background-color: var(--bg-conteudo);
+            padding: 25px 30px;
+            border-radius: 8px;
+            min-height: 100vh;
+        }
+
+        /* 3. Título do Artigo */
+        .page-title {
+            font-size: 2.2em;
+            font-weight: normal;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        /* 4. Tabela de Conteúdo (TOC) */
+        #toc {
+            border: 1px solid var(--borda);
+            background-color: var(--bg-principal);
+            padding: 15px;
+            margin: 15px 0;
+            width: 300px; /* Largura típica da TOC */
+            float: right;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        #toc .toctitle {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--texto-secundario);
+        }
+
+        /* 5. Seções e Subtítulos */
+        .content h2 {
+            font-size: 1.6em;
+            border-bottom: 1px solid var(--borda);
+            padding-bottom: 3px;
+            margin-top: 30px;
+            color: var(--texto-secundario);
+        }
+
+        .content h3 {
+            font-size: 1.3em;
+            margin-top: 20px;
+            color: var(--texto-principal);
+        }
+
+        /* 6. Tabela de Informações (Infobox) */
+        .infobox {
+            float: right;
+            margin: 0 0 1em 1em;
+            border: 1px solid var(--borda);
+            background-color: var(--bg-principal);
+            padding: 10px;
+            width: 300px;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+
+        .infobox img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+            filter: brightness(0.8); /* Escurece a imagem levemente */
+        }
+
+        .infobox caption {
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 5px;
+            color: var(--texto-principal);
+        }
+        
+        /* 7. Tabela Padrão (Exemplo) */
+        table.wikitable {
+            border: 1px solid var(--borda);
+            border-collapse: collapse;
+            margin: 1em 0;
+            width: 100%;
+        }
+
+        table.wikitable th, table.wikitable td {
+            border: 1px solid var(--borda);
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.wikitable th {
+            background-color: var(--bg-tabela-header);
+            color: var(--texto-principal);
+            font-weight: bold;
+        }
+        
+        /* 8. Estilos de Código (Tags <code>) */
         code {
-            background-color: #e6e6fa;
+            background-color: #3a3a3c;
+            color: #ff9999; /* Cor de realce para código */
             padding: 2px 4px;
             border-radius: 3px;
+            font-family: monospace;
         }
-        .output {
-            margin-top: 15px;
-            padding: 10px;
-            border: 1px dashed #0056b3;
-            background-color: #f0f0ff;
-            border-radius: 5px;
+
+        /* Limpa o float após elementos flutuantes (como infobox e TOC) */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
         }
-        .success { color: green; font-weight: bold; }
-        .failure { color: red; font-weight: bold; }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Escopo de Bloco: A Diferença entre `var` e `let/const`</h1>
-        <p>Observe o **Console (F12)** para as mensagens de erro e a saída detalhada.</p>
+    <div class="page-container">
+        <div class="sidebar">
+            <h2>Navegação</h2>
+            <ul>
+                <li><a href="#">Página principal</a></li>
+                <li><a href="#">Conteúdo destacado</a></li>
+                <li><a href="#">Eventos atuais</a></li>
+                <li><a href="#">Página aleatória</a></li>
+            </ul>
 
-        <div class="output">
-            <p><strong>Resultado no HTML:</strong></p>
-            <p id="var-outside"></p>
-            <p id="let-outside"></p>
-            <p id="const-outside"></p>
+            <h2>Contribuir</h2>
+            <ul>
+                <li><a href="#">Ajuda</a></li>
+                <li><a href="#">Portal comunitário</a></li>
+            </ul>
         </div>
-
-        <h2>Estrutura do Escopo:</h2>
-        <pre>
-// Variável Global
-let nomeGlobal = "Mundo"; 
-
-function testeEscopo() {
-    // Escopo de Função: 'var' é visível em toda a função
-    var iVar = 100; 
-
-    if (true) {
-        // Escopo de Bloco (DENTRO do IF):
-        let iLet = 200; 
-        const iConst = 300; 
         
-        console.log("--- DENTRO DO BLOCO (IF) ---");
-        console.log(`iVar (var): ${iVar}`); 
-        console.log(`iLet (let): ${iLet}`); 
-        console.log(`iConst (const): ${iConst}`); 
-    }
-    
-    console.log("--- DENTRO DA FUNÇÃO (FORA DO IF) ---");
-    // iVar funciona, pois 'var' tem escopo de função.
-    console.log(`iVar (var): ${iVar}`); 
-
-    // iLet e iConst FALHAM, pois têm escopo de bloco (só existem dentro do {if}).
-    try { console.log(`iLet (let): ${iLet}`); } catch (e) { console.error(`ERRO LET: ${e.name}. Está fora do Bloco!`); }
-    try { console.log(`iConst (const): ${iConst}`); } catch (e) { console.error(`ERRO CONST: ${e.name}. Está fora do Bloco!`); }
-}
-
-testeEscopo();
-
-console.log("\n--- ESCOPO GLOBAL (Fora de Tudo) ---");
-// Variáveis locais (de função ou bloco) FALHAM no escopo global.
-try { console.log(`Acessando iVar: ${iVar}`); } catch (e) { console.error(`ERRO VAR: ${e.name}. É local à função.`); }
-        </pre>
-    </div>
-
-    <script>
-        // ----------------------------------------------------
-        // Lógica de Execução
-        // ----------------------------------------------------
-        
-        // Variável Global
-        let nomeGlobal = "Mundo"; 
-
-        function testeEscopo() {
-            // Escopo de Função: 'var' é visível em toda a função
-            var iVar = 100; 
-
-            if (true) {
-                // Escopo de Bloco (DENTRO do IF):
-                let iLet = 200; 
-                const iConst = 300; 
-                
-                console.log("--- DENTRO DO BLOCO (IF) ---");
-                console.log(`iVar (var): ${iVar} (OK: var tem escopo de função)`); 
-                console.log(`iLet (let): ${iLet} (OK: let está no seu bloco)`); 
-                console.log(`iConst (const): ${iConst} (OK: const está no seu bloco)`); 
-            }
+        <div class="content clearfix">
+            <h1 class="page-title">Modo Escuro (Simulação)</h1>
             
-            console.log("\n--- DENTRO DA FUNÇÃO (FORA DO IF) ---");
-            // iVar funciona, pois 'var' tem escopo de função.
-            console.log(`iVar (var): ${iVar} (OK)`); 
-            document.getElementById('var-outside').innerHTML = `<code>var iVar</code> (Dentro da Função, Fora do IF): <span class="success">Sucesso: ${iVar}</span>`;
+            <p>De <a href="#">Wikipédia</a>, a enciclopédia livre.</p>
 
-            // iLet e iConst FALHAM, pois têm escopo de bloco (só existem dentro do {if}).
-            try { 
-                console.log(`iLet (let): ${iLet}`); 
-            } catch (e) { 
-                console.error(`ERRO LET: ${e.name}. Está fora do Bloco!`); 
-                document.getElementById('let-outside').innerHTML = `<code>let iLet</code> (Dentro da Função, Fora do IF): <span class="failure">Falha: ${e.name}</span>`;
-            }
+            <div class="infobox">
+                <caption>Tópico de Demonstração</caption>
+                <img src="https://via.placeholder.com/300x200/404040/FFFFFF?text=IMAGEM+AQUI" alt="Imagem de demonstração">
+                <p>O modo escuro (em inglês: *dark mode*) é um esquema de cores de interface de usuário que usa um fundo escuro com cores de texto claras. Este design é frequentemente discutido em termos de design de interface do usuário e web design.</p>
+                <ul>
+                    <li>**Lançamento:** 2018</li>
+                    <li>**Uso:** Reduzir cansaço visual</li>
+                </ul>
+            </div>
 
-            try { 
-                console.log(`iConst (const): ${iConst}`); 
-            } catch (e) { 
-                console.error(`ERRO CONST: ${e.name}. Está fora do Bloco!`); 
-                document.getElementById('const-outside').innerHTML = `<code>const iConst</code> (Dentro da Função, Fora do IF): <span class="failure">Falha: ${e.name}</span>`;
-            }
-        }
+            <div id="toc">
+                <div class="toctitle">Conteúdo</div>
+                <ul>
+                    <li>1 <a href="#">Introdução ao Escuro</a></li>
+                    <li>2 <a href="#">Vantagens</a>
+                        <ul>
+                            <li>2.1 <a href="#">Cansaço Visual</a></li>
+                            <li>2.2 <a href="#">Economia de Bateria</a></li>
+                        </ul>
+                    </li>
+                    <li>3 <a href="#">Implementação (CSS)</a></li>
+                    <li>4 <a href="#">Ver também</a></li>
+                </ul>
+            </div>
 
-        testeEscopo();
+            <p>O **modo escuro** é um tema de cores que exibe texto claro (como branco ou cinza) em um fundo escuro (como preto ou cinza escuro). O principal objetivo é reduzir a tensão ocular causada por telas brilhantes em ambientes de pouca luz.</p>
+            
+            <p>Em julho de 2024, a Wikipédia implementou oficialmente o modo escuro para usuários logados. Essa mudança reflete uma tendência geral na tecnologia, onde muitos sistemas operacionais e aplicativos oferecem essa preferência ao usuário.</p>
+            
+            <h2>Introdução ao Escuro</h2>
+            <p>Historically, o uso de texto claro em fundo escuro remonta às primeiras telas de computador CRT, que exibiam fósforo verde ou âmbar em um fundo preto. Esse estilo, no entanto, foi invertido com o advento da impressão a laser e das interfaces gráficas de usuário (GUIs), que buscavam imitar "papel" branco.</p>
 
-        console.log("\n--- ESCOPO GLOBAL (Fora de Tudo) ---");
-        // Tentativa de acessar variáveis locais (de função ou bloco) FALHAM no escopo global.
-        try { 
-            console.log(`Acessando iVar: ${iVar}`); 
-        } catch (e) { 
-            console.error(`ERRO GLOBAL: ${e.name}. iVar é local à função testeEscopo.`); 
-        }
-    </script>
+            <h2>Vantagens</h2>
+            <p>As vantagens do modo escuro são frequentemente citadas tanto em ergonomia quanto em eficiência energética. No entanto, o consenso sobre os benefícios visuais nem sempre é unânime, dependendo da condição ocular do usuário.</p>
+
+            <h3>Cansaço Visual</h3>
+            <p>Muitos usuários relatam que o tema escuro reduz o cansaço visual, especialmente durante o uso noturno. A redução da quantidade de luz emitida pela tela é crucial para este benefício.</p>
+
+            <h3>Economia de Bateria</h3>
+            <p>Em telas OLED e AMOLED, o modo escuro é conhecido por economizar significativamente a energia da bateria, pois os pixels pretos ficam completamente desativados.</p>
+
+            <h2>Implementação (CSS)</h2>
+            <p>A forma mais moderna de implementar o modo escuro em CSS é usando a *media query* <code>@media (prefers-color-scheme: dark)</code>, que detecta a preferência do sistema operacional do usuário. Alternativamente, pode-se usar variáveis CSS para facilitar a troca de tema, como neste exemplo:</p>
+            
+            <pre><code>/* Exemplo de uso de variáveis CSS */
+:root {
+    --bg-conteudo: #2c2c2e;
+}
+body {
+    background-color: var(--bg-conteudo);
+}</code></pre>
+            
+            <h2>Exemplo de Tabela</h2>
+            <table class="wikitable">
+                <tr>
+                    <th>Plataforma</th>
+                    <th>Modo Escuro Disponível</th>
+                    <th>Método</th>
+                </tr>
+                <tr>
+                    <td>iOS/Android App</td>
+                    <td>Sim</td>
+                    <td>Configurações do Tema</td>
+                </tr>
+                <tr>
+                    <td>Desktop Browser</td>
+                    <td>Sim (Beta)</td>
+                    <td>Opções de Aparência</td>
+                </tr>
+            </table>
+
+            <h2>Ver também</h2>
+            <ul>
+                <li><a href="#">Design de Interface do Usuário</a></li>
+                <li><a href="#">Ergonomia Digital</a></li>
+            </ul>
+
+        </div>
+    </div>
 
 </body>
 </html>
