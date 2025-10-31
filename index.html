@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manipulação de Variável Global em Modo Escuro</title>
+    <title>Variável Global e Variável Local – Wikipédia</title>
     <style>
-        /* Cores Base para o Dark Mode (Estilo Wikipédia) */
+        /* Variáveis de Cores para o Dark Mode (Estilo Wikipédia) */
         :root {
-            --bg-principal: #1c1c1e;
-            --bg-conteudo: #2c2c2e;
-            --texto-principal: #dcdcdc;
-            --texto-secundario: #a0a0a0;
-            --borda: #404040;
-            --link: #7ec2ff;
-            --bg-code: #3a3a3c;
-            --texto-code: #ff9999;
-            --cor-alerta: #ffb74d; /* Laranja para o perigo da Global */
-            --cor-erro: #ff6347;
+            --bg-principal: #1c1c1e;  /* Fundo da página */
+            --bg-conteudo: #2c2c2e;   /* Fundo da área de leitura */
+            --texto-principal: #dcdcdc; /* Texto padrão */
+            --texto-secundario: #a0a0a0; /* Cabeçalhos, subtextos */
+            --borda: #404040;        /* Bordas e linhas de divisão */
+            --link: #7ec2ff;         /* Links não visitados */
+            --bg-infobox: #3a3a3c;   /* Fundo de caixas laterais/tabelas */
+            --bg-code: #0d0d0e;      /* Fundo de bloco de código */
+            --cor-global: #7ec2ff;   /* Azul para Global */
+            --cor-local: #90ee90;    /* Verde claro para Local */
+            --cor-erro: #ff6347;     /* Vermelho para Erros */
         }
 
-        /* 1. Estilos Gerais e Layout Dark Mode */
+        /* 1. Estilos Base e Layout */
         body {
             font-family: sans-serif;
             background-color: var(--bg-principal);
@@ -33,171 +34,276 @@
             text-decoration: none;
         }
 
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+
+        /* Área de Conteúdo Principal */
         .content {
-            max-width: 900px;
-            margin: 20px auto;
             background-color: var(--bg-conteudo);
             padding: 25px 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            margin: 0 20px 20px 20px;
+            min-height: 100vh;
         }
 
+        /* 2. Estrutura do Artigo */
         .page-title {
             font-size: 2em;
             font-weight: normal;
             margin-bottom: 10px;
             padding-bottom: 5px;
             border-bottom: 1px solid var(--borda);
-            color: var(--texto-principal);
         }
         
         .content h2 {
-            font-size: 1.5em;
+            font-size: 1.6em;
             border-bottom: 1px solid var(--borda);
             padding-bottom: 3px;
             margin-top: 30px;
             color: var(--texto-secundario);
         }
 
-        /* 2. Estilo para o Bloco de Demonstração */
-        .demo-output {
-            background-color: var(--bg-code);
+        .content h3 {
+            font-size: 1.3em;
+            margin-top: 20px;
+        }
+        
+        /* 3. Tabela de Conteúdo (TOC) */
+        #toc {
             border: 1px solid var(--borda);
+            background-color: var(--bg-infobox);
             padding: 15px;
-            margin: 20px 0;
+            margin: 15px 0 15px 20px;
+            width: 300px;
+            float: right;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        #toc .toctitle {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--texto-principal);
+        }
+
+        #toc ul {
+            list-style-type: none;
+            padding-left: 15px;
+        }
+
+        /* 4. Infobox (Caixa Lateral) */
+        .infobox {
+            float: right;
+            margin: 0 0 1em 1em;
+            border: 1px solid var(--borda);
+            background-color: var(--bg-infobox);
+            padding: 10px;
+            width: 250px;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+
+        .infobox caption {
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--borda);
+        }
+        
+        .infobox p {
+            padding: 5px 0;
+            margin: 0;
+        }
+
+        /* 5. Estilos de Código e Demonstração */
+        pre {
+            background-color: var(--bg-code);
+            color: var(--texto-principal);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid var(--borda);
+        }
+
+        .demo-output {
+            background-color: var(--bg-infobox);
+            border: 1px solid var(--borda);
+            padding: 10px;
+            margin: 15px 0;
             border-radius: 5px;
         }
 
         .output-line {
             font-family: monospace;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            padding: 2px 0;
         }
 
-        .status-global-antes { color: var(--texto-principal); }
-        .status-local-dentro { color: var(--link); }
-        .status-global-depois { color: var(--cor-alerta); font-weight: bold; }
-        .status-aviso { color: var(--cor-erro); }
-        
-        code {
-            background-color: #3a3a3c;
-            color: var(--texto-code);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
+        .val-global { color: var(--cor-global); font-weight: bold;}
+        .val-local { color: var(--cor-local); font-weight: bold;}
+        .val-erro { color: var(--cor-erro); font-weight: bold;}
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
         }
-        
-        pre {
-            background-color: #0d0d0e;
-            color: var(--texto-principal);
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
+
     </style>
 </head>
 <body>
 
-    <div class="content">
-        <h1 class="page-title">Manipulação Direta de Variável Global (JavaScript)</h1>
-        <p>De <a href="#">Wikipédia</a>, a enciclopédia livre.</p>
-        
-        <p>Este exemplo demonstra como uma função **pode** modificar uma variável global, alterando seu valor permanentemente para o resto do programa. Isso é geralmente considerado uma má prática, pois torna o código imprevisível.</p>
-        
-        <h2>Estrutura do Código:</h2>
-        
-        <pre>
-let contador = 10; // Variável GLOBAL
+    <div class="page-container">
+        <div class="content clearfix">
+            <h1 class="page-title">Variável Global e Variável Local</h1>
+            
+            <p>De <a href="#">Wikipédia</a>, a enciclopédia livre. (Redirecionado de Escopo de Variáveis)</p>
 
-function resetarContador() {
-    // ⚠️ Acessamos o objeto global (window) para forçar a modificação da variável GLOBAL.
-    window.contador = 0; 
+            <div class="infobox">
+                <caption>Escopo de Variáveis</caption>
+                <p><strong>Conceito Base:</strong> Escopo</p>
+                <p><strong>Abrangência Global:</strong> Todo o programa</p>
+                <p><strong>Abrangência Local:</strong> Bloco de código, função ou método.</p>
+                <p><strong>Criação Comum (JS):</strong></p>
+                <p style="text-indent: 10px;">Global: <code>var</code> (fora da função)</p>
+                <p style="text-indent: 10px;">Local/Bloco: <code>let</code>, <code>const</code> (dentro de `{ }`)</p>
+            </div>
 
-    // Tentativa de criar uma variável local, que não é acessível fora.
-    let mensagemLocal = "Reset concluído DENTRO da função."; 
+            <div id="toc">
+                <div class="toctitle">Conteúdo</div>
+                <ul>
+                    <li>1 <a href="#introducao">Introdução</a></li>
+                    <li>2 <a href="#global">Variável Global</a></li>
+                    <li>3 <a href="#local">Variável Local</a>
+                        <ul>
+                            <li>3.1 <a href="#bloco">Escopo de Bloco</a></li>
+                        </ul>
+                    </li>
+                    <li>4 <a href="#demonstracao">Demonstração Prática (JavaScript)</a></li>
+                    <li>5 <a href="#ver-tambem">Ver também</a></li>
+                </ul>
+            </div>
 
+            <p>Em programação, **escopo** refere-se à região do programa onde uma variável é definida e pode ser acessada. A distinção mais fundamental é entre a **Variável Global** e a **Variável Local**.</p>
+            
+            <p>O gerenciamento correto do escopo é crucial para evitar conflitos de nomes (colisões) e para garantir a integridade dos dados, sendo a preferência moderna o uso do escopo mais restrito possível (local ou de bloco).</p>
+
+            <h2 id="global">Variável Global</h2>
+            <p>Uma variável é considerada **global** quando é declarada fora de qualquer função, bloco de código ou classe. Isso significa que ela está acessível e pode ser modificada por **qualquer parte** do programa após sua declaração.</p>
+            
+            <h3>Características:</h3>
+            <ul>
+                <li>**Tempo de Vida:** Existe durante toda a execução do programa.</li>
+                <li>**Acessibilidade:** Pode ser lida e modificada de dentro de funções, estruturas condicionais e laços.</li>
+                <li>**Desvantagem:** O uso excessivo pode levar a códigos difíceis de depurar, pois qualquer parte do programa pode alterar seu valor, causando efeitos colaterais inesperados.</li>
+            </ul>
+
+            <h2 id="local">Variável Local</h2>
+            <p>Uma variável é **local** quando é declarada dentro de um contexto específico, como uma função ou, no caso do JavaScript moderno (com <code>let</code> e <code>const</code>), um bloco de código (ex: um <code>if</code> ou <code>for</code>). Sua visibilidade e tempo de vida são limitados a esse contexto.</p>
+            
+            <h3>Características:</h3>
+            <ul>
+                <li>**Tempo de Vida:** Criada quando o contexto é executado e destruída quando a execução do contexto termina.</li>
+                <li>**Encapsulamento:** Não pode ser acessada de fora do contexto (função ou bloco) onde foi definida.</li>
+                <li>**Vantagem:** Essencial para evitar conflitos e para garantir que a função seja "pura" (sem efeitos colaterais externos).</li>
+            </ul>
+
+            <h3 id="bloco">Escopo de Bloco</h3>
+            <p>Em JavaScript, o conceito de variável local é refinado pelo **Escopo de Bloco**, introduzido pelas palavras-chave <code>let</code> e <code>const</code> (diferentemente de <code>var</code>, que tem escopo de função). Uma variável de bloco só é acessível dentro das chaves <code>{ }</code> que a definem.</p>
+
+            <h2 id="demonstracao">Demonstração Prática (JavaScript)</h2>
+            <p>O código abaixo ilustra a criação de variáveis globais e locais e o erro gerado ao tentar acessar a variável local de fora de sua função. <strong style="color: var(--cor-global);">Abra o Console (F12)</strong> para ver o erro explícito.</p>
+
+            <pre>
+let precoFinal = 100; // Variável GLOBAL (Acessível em todo o script)
+
+function calcularDesconto() {
+    let desconto = 10; // Variável LOCAL (Acessível apenas dentro da função)
+    let precoComDesconto = precoFinal - desconto;
+
+    // Acesso à Variável GLOBAL (leitura) e à LOCAL (leitura e escrita)
     console.log("--- DENTRO DA FUNÇÃO ---");
-    console.log("1. Novo valor do contador (GLOBAL MODIFICADO):", window.contador);
-    console.log("2. Mensagem LOCAL:", mensagemLocal);
+    console.log("1. Variável Local 'desconto':", desconto); 
+    console.log("2. Variável Global 'precoFinal' (leitura):", precoFinal); 
 }
 
 // ----------------------------------------------------
-// Execução e Testes
+// Testes no Escopo Global
 // ----------------------------------------------------
-
 console.log("--- ESCOPO GLOBAL (ANTES) ---");
-console.log("A. Valor inicial do contador (GLOBAL):", contador);
+console.log("A. Acesso à Variável Global:", precoFinal);
 
-resetarContador(); // Chamada da função que modifica a global
+calcularDesconto(); // Executa a função
 
 console.log("\n--- ESCOPO GLOBAL (DEPOIS) ---");
-console.log("B. Valor FINAL do contador (GLOBAL):", contador); // O valor foi alterado!
+console.log("B. Variável Global 'precoFinal' permanece:", precoFinal); // Valor persiste
 
 try {
-    // Tenta acessar a variável LOCAL 'mensagemLocal'
-    console.log("C. Tentativa de acessar 'mensagemLocal':", mensagemLocal);
-} catch (e) {
-    console.error("C. ERRO DE ESCOPO: Variável LOCAL não existe aqui.");
+    // ⚠️ Esta linha causará um erro: a variável 'desconto' não está definida aqui.
+    console.log("C. Tentativa de acessar Variável Local 'desconto':", desconto); 
+} catch(e) {
+    console.error("C. ERRO:", e.name, "— 'desconto' está fora do escopo.");
 }
-        </pre>
+            </pre>
 
-        <h2>Saída da Demonstração</h2>
-        <p>Observe a diferença entre o Ponto A e o Ponto B. O valor de <code>contador</code> foi **permanentemente alterado** pela função.</p>
+            <h3>Saída no HTML (Simulação de Console)</h3>
+            <div class="demo-output" id="demo-output">
+                </div>
+            
+            <h2 id="ver-tambem">Ver também</h2>
+            <ul>
+                <li><a href="#">Escopo Léxico</a></li>
+                <li><a href="#">Closures (Fechamentos)</a></li>
+                <li><a href="#">Variável de Ambiente</a></li>
+            </ul>
 
-        <div class="demo-output" id="demo-output">
-            </div>
-        
-        <h2>⚠️ Aviso de Boa Prática</h2>
-        <p class="status-aviso">Programar dessa forma é desaconselhável! Acessar diretamente o objeto <code>window</code> (ou usar a palavra-chave <code>global</code> em Python) torna o código difícil de rastrear e depurar. É preferível **passar** a variável como um argumento e **retornar** o novo valor.</p>
-        
+        </div>
     </div>
 
     <script>
         // ----------------------------------------------------
-        // Lógica de Execução
+        // Lógica de Execução (para exibir no console e no HTML)
         // ----------------------------------------------------
 
         const outputDiv = document.getElementById('demo-output');
-        function displayOutput(text, type = 'global') {
+        function displayOutput(text, type) {
             const line = document.createElement('div');
-            line.className = `output-line status-${type}`;
+            line.className = `output-line`;
             line.innerHTML = text;
             outputDiv.appendChild(line);
         }
 
-        // Variável GLOBAL
-        let contador = 10; 
+        let precoFinal = 100; // Variável GLOBAL (Acessível em todo o script)
 
-        function resetarContador() {
-            // MANIPULAÇÃO DIRETA DA GLOBAL
-            window.contador = 0; 
-            let mensagemLocal = "Reset concluído DENTRO da função."; 
+        function calcularDesconto() {
+            let desconto = 10; // Variável LOCAL (Acessível apenas dentro da função)
+            let precoComDesconto = precoFinal - desconto;
 
-            displayOutput("--- DENTRO DA FUNÇÃO ---");
-            displayOutput(`1. Novo valor do contador (GLOBAL MODIFICADO): <code>${window.contador}</code>`, 'status-local-dentro'); 
-            displayOutput(`2. Mensagem LOCAL: <code>${mensagemLocal}</code>`, 'status-local-dentro');
+            displayOutput("<strong>--- DENTRO DA FUNÇÃO ---</strong>");
+            displayOutput(`1. Variável Local 'desconto': <span class="val-local">${desconto}</span>`); 
+            displayOutput(`2. Variável Global 'precoFinal' (leitura): <span class="val-global">${precoFinal}</span>`); 
         }
 
         // ----------------------------------------------------
         // Testes no Escopo Global
         // ----------------------------------------------------
 
-        displayOutput("--- ESCOPO GLOBAL (ANTES) ---");
-        // A. Valor inicial da global
-        displayOutput(`A. Valor inicial do contador (GLOBAL): <code>${contador}</code>`, 'status-global-antes');
+        displayOutput("<strong>--- ESCOPO GLOBAL (ANTES) ---</strong>");
+        displayOutput(`A. Acesso à Variável Global: <span class="val-global">${precoFinal}</span>`);
 
-        resetarContador(); // AQUI OCORRE A MODIFICAÇÃO GLOBAL
+        calcularDesconto();
 
-        displayOutput("--- ESCOPO GLOBAL (DEPOIS) ---");
-        // B. Valor final da global (agora é 0)
-        displayOutput(`B. Valor FINAL do contador (GLOBAL): <code>${contador}</code>`, 'status-global-depois');
+        displayOutput("<strong>--- ESCOPO GLOBAL (DEPOIS) ---</strong>");
+        displayOutput(`B. Variável Global 'precoFinal' permanece: <span class="val-global">${precoFinal}</span>`);
 
         try {
-            // C. Tenta acessar a variável LOCAL, que falha
-            displayOutput(`C. Tentativa de acessar 'mensagemLocal': <span class="status-aviso">ERRO! Não acessível.</span>`);
-            console.log("C. Tentativa de acessar 'mensagemLocal':", mensagemLocal); 
-        } catch (e) {
-            displayOutput(`C. ERRO DE ESCOPO: ${e.name}. Variável LOCAL encapsulada.`, 'status-aviso');
-            console.error("C. ERRO DE ESCOPO:", e.name, "— Variável LOCAL encapsulada.");
+            // Tentativa de acessar a variável LOCAL, que causará o erro
+            console.log("C. Tentativa de acessar Variável Local 'desconto':", desconto); 
+        } catch(e) {
+            displayOutput(`C. Tentativa de acessar Variável Local 'desconto': <span class="val-erro">ERRO: ${e.name}. Está fora de escopo.</span>`);
+            console.error("C. ERRO:", e.name, "— 'desconto' está fora do escopo.");
         }
     </script>
 
