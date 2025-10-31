@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artigo Simulado da Wikipédia - Modo Escuro</title>
+    <title>Manipulação de Variável Global em Modo Escuro</title>
     <style>
-        /* Cores Base para o Dark Mode */
+        /* Cores Base para o Dark Mode (Estilo Wikipédia) */
         :root {
-            --bg-principal: #1c1c1e; /* Fundo escuro */
-            --bg-conteudo: #2c2c2e;  /* Fundo do corpo do texto (levemente mais claro) */
-            --texto-principal: #dcdcdc; /* Texto cinza claro */
-            --texto-secundario: #a0a0a0; /* Texto de detalhes/cabeçalhos */
-            --borda: #404040; /* Linhas de separação */
-            --link: #7ec2ff; /* Azul claro para links */
-            --link-visitado: #b09eff; /* Roxo suave para links visitados */
-            --bg-tabela-header: #3a3a3c;
+            --bg-principal: #1c1c1e;
+            --bg-conteudo: #2c2c2e;
+            --texto-principal: #dcdcdc;
+            --texto-secundario: #a0a0a0;
+            --borda: #404040;
+            --link: #7ec2ff;
+            --bg-code: #3a3a3c;
+            --texto-code: #ff9999;
+            --cor-alerta: #ffb74d; /* Laranja para o perigo da Global */
+            --cor-erro: #ff6347;
         }
 
-        /* 1. Estilos Gerais */
+        /* 1. Estilos Gerais e Layout Dark Mode */
         body {
             font-family: sans-serif;
             background-color: var(--bg-principal);
@@ -25,270 +27,179 @@
             margin: 0;
             padding: 0;
         }
-        
+
         a {
             color: var(--link);
             text-decoration: none;
         }
 
-        a:visited {
-            color: var(--link-visitado);
-        }
-
-        /* 2. Layout Principal (Simulação da Estrutura da Wikipédia) */
-        .page-container {
-            display: flex;
-            max-width: 1300px;
-            margin: 0 auto;
-            padding-top: 20px;
-        }
-
-        /* Barra lateral (Menu) */
-        .sidebar {
-            width: 15%;
-            padding: 20px 0;
-            border-right: 1px solid var(--borda);
-            margin-right: 25px;
-        }
-
-        .sidebar h2 {
-            color: var(--texto-secundario);
-            font-size: 1.1em;
-            margin-top: 20px;
-            border-bottom: 1px solid var(--borda);
-            padding-bottom: 5px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0;
-        }
-
-        .sidebar li {
-            margin-bottom: 8px;
-            font-size: 0.9em;
-        }
-
-        /* Área de Conteúdo Principal */
         .content {
-            flex-grow: 1;
+            max-width: 900px;
+            margin: 20px auto;
             background-color: var(--bg-conteudo);
             padding: 25px 30px;
             border-radius: 8px;
-            min-height: 100vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
 
-        /* 3. Título do Artigo */
         .page-title {
-            font-size: 2.2em;
+            font-size: 2em;
             font-weight: normal;
             margin-bottom: 10px;
             padding-bottom: 5px;
             border-bottom: 1px solid var(--borda);
+            color: var(--texto-principal);
         }
-
-        /* 4. Tabela de Conteúdo (TOC) */
-        #toc {
-            border: 1px solid var(--borda);
-            background-color: var(--bg-principal);
-            padding: 15px;
-            margin: 15px 0;
-            width: 300px; /* Largura típica da TOC */
-            float: right;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        #toc .toctitle {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: var(--texto-secundario);
-        }
-
-        /* 5. Seções e Subtítulos */
+        
         .content h2 {
-            font-size: 1.6em;
+            font-size: 1.5em;
             border-bottom: 1px solid var(--borda);
             padding-bottom: 3px;
             margin-top: 30px;
             color: var(--texto-secundario);
         }
 
-        .content h3 {
-            font-size: 1.3em;
-            margin-top: 20px;
-            color: var(--texto-principal);
-        }
-
-        /* 6. Tabela de Informações (Infobox) */
-        .infobox {
-            float: right;
-            margin: 0 0 1em 1em;
+        /* 2. Estilo para o Bloco de Demonstração */
+        .demo-output {
+            background-color: var(--bg-code);
             border: 1px solid var(--borda);
-            background-color: var(--bg-principal);
-            padding: 10px;
-            width: 300px;
-            font-size: 0.9em;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
         }
 
-        .infobox img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin-bottom: 10px;
-            filter: brightness(0.8); /* Escurece a imagem levemente */
+        .output-line {
+            font-family: monospace;
+            margin-bottom: 5px;
         }
 
-        .infobox caption {
-            font-weight: bold;
-            text-align: center;
-            padding-bottom: 5px;
-            color: var(--texto-principal);
-        }
+        .status-global-antes { color: var(--texto-principal); }
+        .status-local-dentro { color: var(--link); }
+        .status-global-depois { color: var(--cor-alerta); font-weight: bold; }
+        .status-aviso { color: var(--cor-erro); }
         
-        /* 7. Tabela Padrão (Exemplo) */
-        table.wikitable {
-            border: 1px solid var(--borda);
-            border-collapse: collapse;
-            margin: 1em 0;
-            width: 100%;
-        }
-
-        table.wikitable th, table.wikitable td {
-            border: 1px solid var(--borda);
-            padding: 8px;
-            text-align: left;
-        }
-
-        table.wikitable th {
-            background-color: var(--bg-tabela-header);
-            color: var(--texto-principal);
-            font-weight: bold;
-        }
-        
-        /* 8. Estilos de Código (Tags <code>) */
         code {
             background-color: #3a3a3c;
-            color: #ff9999; /* Cor de realce para código */
+            color: var(--texto-code);
             padding: 2px 4px;
             border-radius: 3px;
             font-family: monospace;
         }
-
-        /* Limpa o float após elementos flutuantes (como infobox e TOC) */
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        
+        pre {
+            background-color: #0d0d0e;
+            color: var(--texto-principal);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="page-container">
-        <div class="sidebar">
-            <h2>Navegação</h2>
-            <ul>
-                <li><a href="#">Página principal</a></li>
-                <li><a href="#">Conteúdo destacado</a></li>
-                <li><a href="#">Eventos atuais</a></li>
-                <li><a href="#">Página aleatória</a></li>
-            </ul>
-
-            <h2>Contribuir</h2>
-            <ul>
-                <li><a href="#">Ajuda</a></li>
-                <li><a href="#">Portal comunitário</a></li>
-            </ul>
-        </div>
+    <div class="content">
+        <h1 class="page-title">Manipulação Direta de Variável Global (JavaScript)</h1>
+        <p>De <a href="#">Wikipédia</a>, a enciclopédia livre.</p>
         
-        <div class="content clearfix">
-            <h1 class="page-title">Modo Escuro (Simulação)</h1>
-            
-            <p>De <a href="#">Wikipédia</a>, a enciclopédia livre.</p>
+        <p>Este exemplo demonstra como uma função **pode** modificar uma variável global, alterando seu valor permanentemente para o resto do programa. Isso é geralmente considerado uma má prática, pois torna o código imprevisível.</p>
+        
+        <h2>Estrutura do Código:</h2>
+        
+        <pre>
+let contador = 10; // Variável GLOBAL
 
-            <div class="infobox">
-                <caption>Tópico de Demonstração</caption>
-                <img src="https://via.placeholder.com/300x200/404040/FFFFFF?text=IMAGEM+AQUI" alt="Imagem de demonstração">
-                <p>O modo escuro (em inglês: *dark mode*) é um esquema de cores de interface de usuário que usa um fundo escuro com cores de texto claras. Este design é frequentemente discutido em termos de design de interface do usuário e web design.</p>
-                <ul>
-                    <li>**Lançamento:** 2018</li>
-                    <li>**Uso:** Reduzir cansaço visual</li>
-                </ul>
-            </div>
+function resetarContador() {
+    // ⚠️ Acessamos o objeto global (window) para forçar a modificação da variável GLOBAL.
+    window.contador = 0; 
 
-            <div id="toc">
-                <div class="toctitle">Conteúdo</div>
-                <ul>
-                    <li>1 <a href="#">Introdução ao Escuro</a></li>
-                    <li>2 <a href="#">Vantagens</a>
-                        <ul>
-                            <li>2.1 <a href="#">Cansaço Visual</a></li>
-                            <li>2.2 <a href="#">Economia de Bateria</a></li>
-                        </ul>
-                    </li>
-                    <li>3 <a href="#">Implementação (CSS)</a></li>
-                    <li>4 <a href="#">Ver também</a></li>
-                </ul>
-            </div>
+    // Tentativa de criar uma variável local, que não é acessível fora.
+    let mensagemLocal = "Reset concluído DENTRO da função."; 
 
-            <p>O **modo escuro** é um tema de cores que exibe texto claro (como branco ou cinza) em um fundo escuro (como preto ou cinza escuro). O principal objetivo é reduzir a tensão ocular causada por telas brilhantes em ambientes de pouca luz.</p>
-            
-            <p>Em julho de 2024, a Wikipédia implementou oficialmente o modo escuro para usuários logados. Essa mudança reflete uma tendência geral na tecnologia, onde muitos sistemas operacionais e aplicativos oferecem essa preferência ao usuário.</p>
-            
-            <h2>Introdução ao Escuro</h2>
-            <p>Historically, o uso de texto claro em fundo escuro remonta às primeiras telas de computador CRT, que exibiam fósforo verde ou âmbar em um fundo preto. Esse estilo, no entanto, foi invertido com o advento da impressão a laser e das interfaces gráficas de usuário (GUIs), que buscavam imitar "papel" branco.</p>
-
-            <h2>Vantagens</h2>
-            <p>As vantagens do modo escuro são frequentemente citadas tanto em ergonomia quanto em eficiência energética. No entanto, o consenso sobre os benefícios visuais nem sempre é unânime, dependendo da condição ocular do usuário.</p>
-
-            <h3>Cansaço Visual</h3>
-            <p>Muitos usuários relatam que o tema escuro reduz o cansaço visual, especialmente durante o uso noturno. A redução da quantidade de luz emitida pela tela é crucial para este benefício.</p>
-
-            <h3>Economia de Bateria</h3>
-            <p>Em telas OLED e AMOLED, o modo escuro é conhecido por economizar significativamente a energia da bateria, pois os pixels pretos ficam completamente desativados.</p>
-
-            <h2>Implementação (CSS)</h2>
-            <p>A forma mais moderna de implementar o modo escuro em CSS é usando a *media query* <code>@media (prefers-color-scheme: dark)</code>, que detecta a preferência do sistema operacional do usuário. Alternativamente, pode-se usar variáveis CSS para facilitar a troca de tema, como neste exemplo:</p>
-            
-            <pre><code>/* Exemplo de uso de variáveis CSS */
-:root {
-    --bg-conteudo: #2c2c2e;
+    console.log("--- DENTRO DA FUNÇÃO ---");
+    console.log("1. Novo valor do contador (GLOBAL MODIFICADO):", window.contador);
+    console.log("2. Mensagem LOCAL:", mensagemLocal);
 }
-body {
-    background-color: var(--bg-conteudo);
-}</code></pre>
-            
-            <h2>Exemplo de Tabela</h2>
-            <table class="wikitable">
-                <tr>
-                    <th>Plataforma</th>
-                    <th>Modo Escuro Disponível</th>
-                    <th>Método</th>
-                </tr>
-                <tr>
-                    <td>iOS/Android App</td>
-                    <td>Sim</td>
-                    <td>Configurações do Tema</td>
-                </tr>
-                <tr>
-                    <td>Desktop Browser</td>
-                    <td>Sim (Beta)</td>
-                    <td>Opções de Aparência</td>
-                </tr>
-            </table>
 
-            <h2>Ver também</h2>
-            <ul>
-                <li><a href="#">Design de Interface do Usuário</a></li>
-                <li><a href="#">Ergonomia Digital</a></li>
-            </ul>
+// ----------------------------------------------------
+// Execução e Testes
+// ----------------------------------------------------
 
-        </div>
+console.log("--- ESCOPO GLOBAL (ANTES) ---");
+console.log("A. Valor inicial do contador (GLOBAL):", contador);
+
+resetarContador(); // Chamada da função que modifica a global
+
+console.log("\n--- ESCOPO GLOBAL (DEPOIS) ---");
+console.log("B. Valor FINAL do contador (GLOBAL):", contador); // O valor foi alterado!
+
+try {
+    // Tenta acessar a variável LOCAL 'mensagemLocal'
+    console.log("C. Tentativa de acessar 'mensagemLocal':", mensagemLocal);
+} catch (e) {
+    console.error("C. ERRO DE ESCOPO: Variável LOCAL não existe aqui.");
+}
+        </pre>
+
+        <h2>Saída da Demonstração</h2>
+        <p>Observe a diferença entre o Ponto A e o Ponto B. O valor de <code>contador</code> foi **permanentemente alterado** pela função.</p>
+
+        <div class="demo-output" id="demo-output">
+            </div>
+        
+        <h2>⚠️ Aviso de Boa Prática</h2>
+        <p class="status-aviso">Programar dessa forma é desaconselhável! Acessar diretamente o objeto <code>window</code> (ou usar a palavra-chave <code>global</code> em Python) torna o código difícil de rastrear e depurar. É preferível **passar** a variável como um argumento e **retornar** o novo valor.</p>
+        
     </div>
+
+    <script>
+        // ----------------------------------------------------
+        // Lógica de Execução
+        // ----------------------------------------------------
+
+        const outputDiv = document.getElementById('demo-output');
+        function displayOutput(text, type = 'global') {
+            const line = document.createElement('div');
+            line.className = `output-line status-${type}`;
+            line.innerHTML = text;
+            outputDiv.appendChild(line);
+        }
+
+        // Variável GLOBAL
+        let contador = 10; 
+
+        function resetarContador() {
+            // MANIPULAÇÃO DIRETA DA GLOBAL
+            window.contador = 0; 
+            let mensagemLocal = "Reset concluído DENTRO da função."; 
+
+            displayOutput("--- DENTRO DA FUNÇÃO ---");
+            displayOutput(`1. Novo valor do contador (GLOBAL MODIFICADO): <code>${window.contador}</code>`, 'status-local-dentro'); 
+            displayOutput(`2. Mensagem LOCAL: <code>${mensagemLocal}</code>`, 'status-local-dentro');
+        }
+
+        // ----------------------------------------------------
+        // Testes no Escopo Global
+        // ----------------------------------------------------
+
+        displayOutput("--- ESCOPO GLOBAL (ANTES) ---");
+        // A. Valor inicial da global
+        displayOutput(`A. Valor inicial do contador (GLOBAL): <code>${contador}</code>`, 'status-global-antes');
+
+        resetarContador(); // AQUI OCORRE A MODIFICAÇÃO GLOBAL
+
+        displayOutput("--- ESCOPO GLOBAL (DEPOIS) ---");
+        // B. Valor final da global (agora é 0)
+        displayOutput(`B. Valor FINAL do contador (GLOBAL): <code>${contador}</code>`, 'status-global-depois');
+
+        try {
+            // C. Tenta acessar a variável LOCAL, que falha
+            displayOutput(`C. Tentativa de acessar 'mensagemLocal': <span class="status-aviso">ERRO! Não acessível.</span>`);
+            console.log("C. Tentativa de acessar 'mensagemLocal':", mensagemLocal); 
+        } catch (e) {
+            displayOutput(`C. ERRO DE ESCOPO: ${e.name}. Variável LOCAL encapsulada.`, 'status-aviso');
+            console.error("C. ERRO DE ESCOPO:", e.name, "— Variável LOCAL encapsulada.");
+        }
+    </script>
 
 </body>
 </html>
